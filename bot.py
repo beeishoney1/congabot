@@ -1,45 +1,58 @@
-# bot.py - Telegram Bot with HTTP Server for Render
 import telebot
 from flask import Flask, request
-import threading
 
-# Initialize bot
-bot = telebot.TeleBot("8042603273:AAFZpfKNICr57kYBkexm1MmcJLU_2mTSRmA")
+# Bot Token
+TOKEN = "8042603273:AAFZpfKNICr57kYBkexm1MmcJLU_2mTSRmA"
+
+# Your Render URL (replace this with your actual Render domain)
+WEBHOOK_URL = "https://congabot.onrender.com/webhook"
+
+# URLs for your app and channel
 FRONTEND_URL = "https://congashop.netlify.app"
-CHANNEL_URL = "https://t.me/your_channel_username"  # Replace with your actual channel link
+CHANNEL_URL = "https://t.me/congastorez"
 
-# Create a simple Flask app for port binding
+# Initialize bot and Flask app
+bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "🤖 Telegram Bot is running!"
+    return "🤖 Telegram Bot with Webhook is running!"
 
 @app.route('/health')
 def health():
     return "✅ Healthy"
 
-# Start command - shows Mini App button and channel join button
+# Webhook endpoint
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    json_str = request.get_data().decode('UTF-8')
+    update = telebot.types.Update.de_json(json_str)
+    bot.process_new_updates([update])
+    return "OK", 200
+
+# --- Bot Handlers ---
+
 @bot.message_handler(commands=['start'])
 def show_mini_app_button(message):
     markup = telebot.types.InlineKeyboardMarkup(row_width=1)
-    
+
     # Mini App button
     web_app_btn = telebot.types.InlineKeyboardButton(
-        text="🎮 Open Diamond Shop", 
+        text="🎮 Open Diamond Shop",
         web_app=telebot.types.WebAppInfo(url=FRONTEND_URL)
     )
-    
+
     # Channel join button
     channel_btn = telebot.types.InlineKeyboardButton(
-        text="📢 Join Our Channel", 
+        text="📢 Join Our Channel",
         url=CHANNEL_URL
     )
-    
+
     markup.add(web_app_btn, channel_btn)
-    
+
     welcome_text = """
-✨ *Welcome to Conga Shop!* ✨
+✨ *Welcome to Diamond Shop!* ✨
 
 💎 *Premium Mobile Legends Diamonds*
 ⚡ *Instant Delivery*
@@ -47,7 +60,7 @@ def show_mini_app_button(message):
 
 Click below to open our shop or join our channel for updates and promotions!
     """
-    
+
     bot.send_message(
         message.chat.id,
         welcome_text,
@@ -55,25 +68,22 @@ Click below to open our shop or join our channel for updates and promotions!
         reply_markup=markup
     )
 
-# Handle any other messages - also show Mini App button and channel join button
 @bot.message_handler(func=lambda message: True)
 def handle_other_messages(message):
     markup = telebot.types.InlineKeyboardMarkup(row_width=1)
-    
-    # Mini App button
+
     web_app_btn = telebot.types.InlineKeyboardButton(
-        text="🎮 Open Diamond Shop", 
+        text="🎮 Open Diamond Shop",
         web_app=telebot.types.WebAppInfo(url=FRONTEND_URL)
     )
-    
-    # Channel join button
+
     channel_btn = telebot.types.InlineKeyboardButton(
-        text="📢 Join Our Channel", 
+        text="📢 Join Our Channel",
         url=CHANNEL_URL
     )
-    
+
     markup.add(web_app_btn, channel_btn)
-    
+
     response_text = """
 💎 *Diamond Shop* 💎
 
@@ -81,7 +91,7 @@ Click below to:
 • Open our shop to purchase diamonds
 • Join our channel for updates and promotions
     """
-    
+
     bot.send_message(
         message.chat.id,
         response_text,
@@ -89,18 +99,11 @@ Click below to:
         reply_markup=markup
     )
 
-def run_bot():
-    print("🤖 Starting Telegram Bot...")
-    bot.polling()
-
-def run_web():
-    print("🌐 Starting HTTP Server...")
-    app.run(host='0.0.0.0', port=5000)
-
-if __name__ == '__main__':
-    # Start bot in a separate thread
-    bot_thread = threading.Thread(target=run_bot)
-    bot_thread.start()
-    
-    # Start web server in main thread (for port binding)
-    run_web()
+# --- Start Webhook and Flask ---
+if __name__ == "__main__":
+    # Remove any existing webhook
+    bot.remove_webhook()
+    # Set new webhook
+    bot.set_webhook(url=WEBHOOK_URL)
+    # Start Flask app
+    app.run(host="0.0.0.0", port=5000)
