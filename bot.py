@@ -52,14 +52,14 @@ def show_mini_app_button(message):
     markup.add(web_app_btn, channel_btn)
 
     welcome_text = """
-✨ *Welcome to CONGA Shop!* ✨
+✨ 𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝘁𝗼 𝗖𝗢𝗡𝗚𝗔 𝗦𝗵𝗼𝗽! ✨
 
-💎 *Premium Mobile Legends Diamonds*
-⚡ *Instant Delivery*
-🎯 *Best Prices in Myanmar*
+💎 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗠𝗼𝗯𝗶𝗹𝗲 𝗟𝗲𝗴𝗲𝗻𝗱𝘀 𝗗𝗶𝗮𝗺𝗼𝗻𝗱𝘀
+⚡ 𝗜𝗻𝘀𝘁𝗮𝗻𝘁 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆
+🎯 𝗕𝗲𝘀𝘁 𝗣𝗿𝗶𝗰𝗲𝘀 𝗶𝗻 𝗠𝘆𝗮𝗻𝗺𝗮𝗿
 
 Click below to open our shop or join our channel for updates and promotions!
-    """
+"""
 
     bot.send_message(
         message.chat.id,
