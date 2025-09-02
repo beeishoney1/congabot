@@ -52,7 +52,7 @@ def show_mini_app_button(message):
     markup.add(web_app_btn, channel_btn)
 
     welcome_text = """
-✨ *Welcome to Diamond Shop!* ✨
+✨ *Welcome to CONGA Shop!* ✨
 
 💎 *Premium Mobile Legends Diamonds*
 ⚡ *Instant Delivery*
